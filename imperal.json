@@ -1,0 +1,4018 @@
+{
+  "manifest_schema_version": 3,
+  "sdk_version": "5.11.0",
+  "app_id": "freshservice-connector",
+  "version": "0.1.0",
+  "name": "Freshservice",
+  "description": "Connect your own Freshservice ITSM account to manage Tickets (Incidents & Service Requests), Problems, Changes, Releases, Assets (CMDB), and Knowledge Base articles through the Freshservice v2 REST API.",
+  "icon": "icon.svg",
+  "actions_explicit": true,
+  "system": false,
+  "capabilities": [
+    "freshservice:read",
+    "freshservice:write"
+  ],
+  "tools": [
+    {
+      "name": "connect_freshservice",
+      "description": "Connect your own Freshservice account by saving your domain and API key, after checking they actually work.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "freshservice.provider.connected"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "label": {
+            "default": "",
+            "description": "Friendly account label, e.g. 'Acme IT'.",
+            "title": "Label",
+            "type": "string"
+          },
+          "domain": {
+            "description": "Freshservice domain, e.g. 'acme.freshservice.com' or just 'acme'.",
+            "title": "Domain",
+            "type": "string"
+          },
+          "api_key": {
+            "description": "Freshservice account API key (Profile Settings > API Key).",
+            "title": "Api Key",
+            "type": "string"
+          }
+        },
+        "required": [
+          "domain",
+          "api_key"
+        ],
+        "title": "ConnectFreshserviceParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "label": {
+            "default": "",
+            "title": "Label",
+            "type": "string"
+          },
+          "domain": {
+            "default": "",
+            "title": "Domain",
+            "type": "string"
+          },
+          "connected": {
+            "default": true,
+            "title": "Connected",
+            "type": "boolean"
+          }
+        },
+        "title": "FreshserviceConnection",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "freshservice-connector.connect_freshservice",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "freshservice"
+    },
+    {
+      "name": "disconnect_freshservice",
+      "description": "Disconnect a Freshservice account: deletes the saved domain/API key.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "freshservice.provider.disconnected"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "description": "Saved Freshservice connection ID to remove from Imperal.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "connection_id"
+        ],
+        "title": "DisconnectFreshserviceParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "delete",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "default": "Delete result",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "deleted": {
+            "default": true,
+            "title": "Deleted",
+            "type": "boolean"
+          }
+        },
+        "title": "DeleteResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "freshservice-connector.disconnect_freshservice",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "freshservice"
+    },
+    {
+      "name": "list_connections",
+      "description": "List the connected Freshservice accounts.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {},
+        "title": "NoParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "FreshserviceConnection": {
+            "properties": {
+              "id": {
+                "default": "",
+                "title": "Id",
+                "type": "string"
+              },
+              "title": {
+                "default": "",
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "label": {
+                "default": "",
+                "title": "Label",
+                "type": "string"
+              },
+              "domain": {
+                "default": "",
+                "title": "Domain",
+                "type": "string"
+              },
+              "connected": {
+                "default": true,
+                "title": "Connected",
+                "type": "boolean"
+              }
+            },
+            "title": "FreshserviceConnection",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "default": "connections",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "default": "Freshservice connections",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "connections": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/FreshserviceConnection"
+            },
+            "title": "Connections",
+            "type": "array"
+          }
+        },
+        "title": "ConnectionList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "freshservice-connector.list_connections",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "freshservice"
+    },
+    {
+      "name": "list_tickets",
+      "description": "List tickets (Incidents and Service Requests) in the connected Freshservice account, optionally filtered by a Freshservice filter query.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved Freshservice connection ID. Omit to use the first connected account.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "query": {
+            "default": "",
+            "description": "Optional Freshservice filter query, e.g. \"status:2\" or \"priority:3\".",
+            "title": "Query",
+            "type": "string"
+          },
+          "per_page": {
+            "default": 30,
+            "description": "Max records to return (up to 100).",
+            "title": "Per Page",
+            "type": "integer"
+          }
+        },
+        "title": "ListTicketsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "Ticket": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "default": "",
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "default": 0,
+                "title": "Status",
+                "type": "integer"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "ticket_id": {
+                "default": "",
+                "title": "Ticket Id",
+                "type": "string"
+              },
+              "subject": {
+                "default": "",
+                "title": "Subject",
+                "type": "string"
+              },
+              "priority": {
+                "default": 0,
+                "title": "Priority",
+                "type": "integer"
+              },
+              "type": {
+                "default": "",
+                "title": "Type",
+                "type": "string"
+              },
+              "raw": {
+                "additionalProperties": true,
+                "default": {},
+                "title": "Raw",
+                "type": "object"
+              }
+            },
+            "required": [
+              "id"
+            ],
+            "title": "Ticket",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "default": "tickets",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "default": "Tickets",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "tickets": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/Ticket"
+            },
+            "title": "Tickets",
+            "type": "array"
+          }
+        },
+        "title": "TicketList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "freshservice-connector.list_tickets",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "freshservice"
+    },
+    {
+      "name": "get_ticket",
+      "description": "Read one ticket in full by id.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved Freshservice connection ID. Omit to use the first connected account.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "ticket_id": {
+            "description": "Ticket display id.",
+            "title": "Ticket Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ticket_id"
+        ],
+        "title": "TicketIdParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "default": 0,
+            "title": "Status",
+            "type": "integer"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "ticket_id": {
+            "default": "",
+            "title": "Ticket Id",
+            "type": "string"
+          },
+          "subject": {
+            "default": "",
+            "title": "Subject",
+            "type": "string"
+          },
+          "priority": {
+            "default": 0,
+            "title": "Priority",
+            "type": "integer"
+          },
+          "type": {
+            "default": "",
+            "title": "Type",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "Ticket",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "freshservice-connector.get_ticket",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "freshservice"
+    },
+    {
+      "name": "create_ticket",
+      "description": "Create a new ticket (Incident or Service Request).",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "create:ticket"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved Freshservice connection ID. Omit to use the first connected account.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "values": {
+            "additionalProperties": true,
+            "description": "Ticket field values, e.g. {'subject': '...', 'description': '...', 'email': 'user@acme.com', 'priority': 1, 'status': 2, 'type': 'Incident'}.",
+            "title": "Values",
+            "type": "object"
+          }
+        },
+        "required": [
+          "values"
+        ],
+        "title": "CreateTicketParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "default": 0,
+            "title": "Status",
+            "type": "integer"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "ticket_id": {
+            "default": "",
+            "title": "Ticket Id",
+            "type": "string"
+          },
+          "subject": {
+            "default": "",
+            "title": "Subject",
+            "type": "string"
+          },
+          "priority": {
+            "default": 0,
+            "title": "Priority",
+            "type": "integer"
+          },
+          "type": {
+            "default": "",
+            "title": "Type",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "Ticket",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "freshservice-connector.create_ticket",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "freshservice"
+    },
+    {
+      "name": "update_ticket",
+      "description": "Update selected fields of an existing ticket. Only given fields change.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "update:ticket"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved Freshservice connection ID. Omit to use the first connected account.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "ticket_id": {
+            "description": "Ticket display id.",
+            "title": "Ticket Id",
+            "type": "string"
+          },
+          "values": {
+            "additionalProperties": true,
+            "description": "Ticket field values to update.",
+            "title": "Values",
+            "type": "object"
+          }
+        },
+        "required": [
+          "ticket_id",
+          "values"
+        ],
+        "title": "UpdateTicketParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "default": 0,
+            "title": "Status",
+            "type": "integer"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "ticket_id": {
+            "default": "",
+            "title": "Ticket Id",
+            "type": "string"
+          },
+          "subject": {
+            "default": "",
+            "title": "Subject",
+            "type": "string"
+          },
+          "priority": {
+            "default": 0,
+            "title": "Priority",
+            "type": "integer"
+          },
+          "type": {
+            "default": "",
+            "title": "Type",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "Ticket",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "freshservice-connector.update_ticket",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "freshservice"
+    },
+    {
+      "name": "list_problems",
+      "description": "List problems on the connected Freshservice account.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved Freshservice connection ID. Omit to use the first connected account.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "per_page": {
+            "default": 30,
+            "description": "Max records to return (up to 100).",
+            "title": "Per Page",
+            "type": "integer"
+          }
+        },
+        "title": "ListProblemsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "Problem": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "default": "",
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "default": 0,
+                "title": "Status",
+                "type": "integer"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "problem_id": {
+                "default": "",
+                "title": "Problem Id",
+                "type": "string"
+              },
+              "subject": {
+                "default": "",
+                "title": "Subject",
+                "type": "string"
+              },
+              "raw": {
+                "additionalProperties": true,
+                "default": {},
+                "title": "Raw",
+                "type": "object"
+              }
+            },
+            "required": [
+              "id"
+            ],
+            "title": "Problem",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "default": "problems",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "default": "Problems",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "problems": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/Problem"
+            },
+            "title": "Problems",
+            "type": "array"
+          }
+        },
+        "title": "ProblemList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "freshservice-connector.list_problems",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "freshservice"
+    },
+    {
+      "name": "create_problem",
+      "description": "Create a new problem record.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "create:problem"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved Freshservice connection ID. Omit to use the first connected account.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "values": {
+            "additionalProperties": true,
+            "description": "Problem field values, e.g. {'subject': '...', 'description': '...'}.",
+            "title": "Values",
+            "type": "object"
+          }
+        },
+        "required": [
+          "values"
+        ],
+        "title": "CreateProblemParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "default": 0,
+            "title": "Status",
+            "type": "integer"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "problem_id": {
+            "default": "",
+            "title": "Problem Id",
+            "type": "string"
+          },
+          "subject": {
+            "default": "",
+            "title": "Subject",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "Problem",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "freshservice-connector.create_problem",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "freshservice"
+    },
+    {
+      "name": "update_problem",
+      "description": "Update selected fields of an existing problem.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "update:problem"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved Freshservice connection ID. Omit to use the first connected account.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "problem_id": {
+            "description": "Problem display id.",
+            "title": "Problem Id",
+            "type": "string"
+          },
+          "values": {
+            "additionalProperties": true,
+            "description": "Problem field values to update.",
+            "title": "Values",
+            "type": "object"
+          }
+        },
+        "required": [
+          "problem_id",
+          "values"
+        ],
+        "title": "UpdateProblemParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "default": 0,
+            "title": "Status",
+            "type": "integer"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "problem_id": {
+            "default": "",
+            "title": "Problem Id",
+            "type": "string"
+          },
+          "subject": {
+            "default": "",
+            "title": "Subject",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "Problem",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "freshservice-connector.update_problem",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "freshservice"
+    },
+    {
+      "name": "list_changes",
+      "description": "List change requests on the connected Freshservice account.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved Freshservice connection ID. Omit to use the first connected account.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "per_page": {
+            "default": 30,
+            "description": "Max records to return (up to 100).",
+            "title": "Per Page",
+            "type": "integer"
+          }
+        },
+        "title": "ListChangesParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "ChangeRequest": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "default": "",
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "default": 0,
+                "title": "Status",
+                "type": "integer"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "change_id": {
+                "default": "",
+                "title": "Change Id",
+                "type": "string"
+              },
+              "subject": {
+                "default": "",
+                "title": "Subject",
+                "type": "string"
+              },
+              "raw": {
+                "additionalProperties": true,
+                "default": {},
+                "title": "Raw",
+                "type": "object"
+              }
+            },
+            "required": [
+              "id"
+            ],
+            "title": "ChangeRequest",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "default": "changes",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "default": "Changes",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "changes": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/ChangeRequest"
+            },
+            "title": "Changes",
+            "type": "array"
+          }
+        },
+        "title": "ChangeRequestList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "freshservice-connector.list_changes",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "freshservice"
+    },
+    {
+      "name": "create_change",
+      "description": "Create a new change request.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "create:change"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved Freshservice connection ID. Omit to use the first connected account.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "values": {
+            "additionalProperties": true,
+            "description": "Change field values, e.g. {'subject': '...', 'description': '...', 'planned_start_date': '...'}.",
+            "title": "Values",
+            "type": "object"
+          }
+        },
+        "required": [
+          "values"
+        ],
+        "title": "CreateChangeParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "default": 0,
+            "title": "Status",
+            "type": "integer"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "change_id": {
+            "default": "",
+            "title": "Change Id",
+            "type": "string"
+          },
+          "subject": {
+            "default": "",
+            "title": "Subject",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "ChangeRequest",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "freshservice-connector.create_change",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "freshservice"
+    },
+    {
+      "name": "update_change",
+      "description": "Update selected fields of an existing change request.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "update:change"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved Freshservice connection ID. Omit to use the first connected account.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "change_id": {
+            "description": "Change display id.",
+            "title": "Change Id",
+            "type": "string"
+          },
+          "values": {
+            "additionalProperties": true,
+            "description": "Change field values to update.",
+            "title": "Values",
+            "type": "object"
+          }
+        },
+        "required": [
+          "change_id",
+          "values"
+        ],
+        "title": "UpdateChangeParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "default": 0,
+            "title": "Status",
+            "type": "integer"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "change_id": {
+            "default": "",
+            "title": "Change Id",
+            "type": "string"
+          },
+          "subject": {
+            "default": "",
+            "title": "Subject",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "ChangeRequest",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "freshservice-connector.update_change",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "freshservice"
+    },
+    {
+      "name": "list_releases",
+      "description": "List releases on the connected Freshservice account.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved Freshservice connection ID. Omit to use the first connected account.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "per_page": {
+            "default": 30,
+            "description": "Max records to return (up to 100).",
+            "title": "Per Page",
+            "type": "integer"
+          }
+        },
+        "title": "ListReleasesParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "Release": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "default": "",
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "default": 0,
+                "title": "Status",
+                "type": "integer"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "release_id": {
+                "default": "",
+                "title": "Release Id",
+                "type": "string"
+              },
+              "subject": {
+                "default": "",
+                "title": "Subject",
+                "type": "string"
+              },
+              "raw": {
+                "additionalProperties": true,
+                "default": {},
+                "title": "Raw",
+                "type": "object"
+              }
+            },
+            "required": [
+              "id"
+            ],
+            "title": "Release",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "default": "releases",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "default": "Releases",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "releases": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/Release"
+            },
+            "title": "Releases",
+            "type": "array"
+          }
+        },
+        "title": "ReleaseList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "freshservice-connector.list_releases",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "freshservice"
+    },
+    {
+      "name": "create_release",
+      "description": "Create a new release record.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "create:release"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved Freshservice connection ID. Omit to use the first connected account.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "values": {
+            "additionalProperties": true,
+            "description": "Release field values, e.g. {'subject': '...', 'description': '...'}.",
+            "title": "Values",
+            "type": "object"
+          }
+        },
+        "required": [
+          "values"
+        ],
+        "title": "CreateReleaseParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "default": 0,
+            "title": "Status",
+            "type": "integer"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "release_id": {
+            "default": "",
+            "title": "Release Id",
+            "type": "string"
+          },
+          "subject": {
+            "default": "",
+            "title": "Subject",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "Release",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "freshservice-connector.create_release",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "freshservice"
+    },
+    {
+      "name": "update_release",
+      "description": "Update selected fields of an existing release.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "update:release"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved Freshservice connection ID. Omit to use the first connected account.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "release_id": {
+            "description": "Release display id.",
+            "title": "Release Id",
+            "type": "string"
+          },
+          "values": {
+            "additionalProperties": true,
+            "description": "Release field values to update.",
+            "title": "Values",
+            "type": "object"
+          }
+        },
+        "required": [
+          "release_id",
+          "values"
+        ],
+        "title": "UpdateReleaseParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "default": 0,
+            "title": "Status",
+            "type": "integer"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "release_id": {
+            "default": "",
+            "title": "Release Id",
+            "type": "string"
+          },
+          "subject": {
+            "default": "",
+            "title": "Subject",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "Release",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "freshservice-connector.update_release",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "freshservice"
+    },
+    {
+      "name": "list_knowledge_articles",
+      "description": "List Knowledge Base articles on the connected Freshservice account.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved Freshservice connection ID. Omit to use the first connected account.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "per_page": {
+            "default": 30,
+            "description": "Max records to return (up to 100).",
+            "title": "Per Page",
+            "type": "integer"
+          }
+        },
+        "title": "ListArticlesParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "Article": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "default": "",
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "default": 0,
+                "title": "Status",
+                "type": "integer"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "article_id": {
+                "default": "",
+                "title": "Article Id",
+                "type": "string"
+              },
+              "raw": {
+                "additionalProperties": true,
+                "default": {},
+                "title": "Raw",
+                "type": "object"
+              }
+            },
+            "required": [
+              "id"
+            ],
+            "title": "Article",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "default": "articles",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "default": "Knowledge base articles",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "articles": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/Article"
+            },
+            "title": "Articles",
+            "type": "array"
+          }
+        },
+        "title": "ArticleList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "freshservice-connector.list_knowledge_articles",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "freshservice"
+    },
+    {
+      "name": "list_requesters",
+      "description": "List requesters (end users who raise tickets) on the connected Freshservice account.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved Freshservice connection ID. Omit to use the first connected account.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "per_page": {
+            "default": 30,
+            "description": "Max records to return (up to 100).",
+            "title": "Per Page",
+            "type": "integer"
+          }
+        },
+        "title": "ListPeopleParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "Person": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "default": "",
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "person_id": {
+                "default": "",
+                "title": "Person Id",
+                "type": "string"
+              },
+              "name": {
+                "default": "",
+                "title": "Name",
+                "type": "string"
+              },
+              "email": {
+                "default": "",
+                "title": "Email",
+                "type": "string"
+              },
+              "raw": {
+                "additionalProperties": true,
+                "default": {},
+                "title": "Raw",
+                "type": "object"
+              }
+            },
+            "required": [
+              "id"
+            ],
+            "title": "Person",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "default": "people",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "default": "People",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "people": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/Person"
+            },
+            "title": "People",
+            "type": "array"
+          }
+        },
+        "title": "PersonList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "freshservice-connector.list_requesters",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "freshservice"
+    },
+    {
+      "name": "list_agents",
+      "description": "List agents (support staff) on the connected Freshservice account.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved Freshservice connection ID. Omit to use the first connected account.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "per_page": {
+            "default": 30,
+            "description": "Max records to return (up to 100).",
+            "title": "Per Page",
+            "type": "integer"
+          }
+        },
+        "title": "ListPeopleParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "Person": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "default": "",
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "person_id": {
+                "default": "",
+                "title": "Person Id",
+                "type": "string"
+              },
+              "name": {
+                "default": "",
+                "title": "Name",
+                "type": "string"
+              },
+              "email": {
+                "default": "",
+                "title": "Email",
+                "type": "string"
+              },
+              "raw": {
+                "additionalProperties": true,
+                "default": {},
+                "title": "Raw",
+                "type": "object"
+              }
+            },
+            "required": [
+              "id"
+            ],
+            "title": "Person",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "default": "people",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "default": "People",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "people": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/Person"
+            },
+            "title": "People",
+            "type": "array"
+          }
+        },
+        "title": "PersonList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "freshservice-connector.list_agents",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "freshservice"
+    },
+    {
+      "name": "list_table",
+      "description": "List records from any Freshservice v2 API path -- a generic passthrough for endpoints not covered by typed wrappers.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved Freshservice connection ID. Omit to use the first connected account.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "path": {
+            "description": "Exact Freshservice v2 API path, e.g. '/tickets' or '/agents'.",
+            "title": "Path",
+            "type": "string"
+          },
+          "query_params": {
+            "additionalProperties": true,
+            "description": "Optional query string parameters.",
+            "title": "Query Params",
+            "type": "object"
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "title": "GenericGetParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "generic",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "default": "Generic response",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "title": "GenericPayload",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "freshservice-connector.list_table",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "freshservice"
+    },
+    {
+      "name": "create_record",
+      "description": "Create a new record on any Freshservice v2 API path -- a generic passthrough for endpoints not covered by typed wrappers.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "create:record"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved Freshservice connection ID. Omit to use the first connected account.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "path": {
+            "description": "Exact Freshservice v2 API path, e.g. '/tickets'.",
+            "title": "Path",
+            "type": "string"
+          },
+          "values": {
+            "additionalProperties": true,
+            "description": "Field name/value pairs for the request body.",
+            "title": "Values",
+            "type": "object"
+          }
+        },
+        "required": [
+          "path",
+          "values"
+        ],
+        "title": "GenericWriteParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "generic",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "default": "Generic response",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "title": "GenericPayload",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "freshservice-connector.create_record",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "freshservice"
+    },
+    {
+      "name": "update_record",
+      "description": "Update a record on any Freshservice v2 API path -- a generic passthrough for endpoints not covered by typed wrappers.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "update:record"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved Freshservice connection ID. Omit to use the first connected account.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "path": {
+            "description": "Exact Freshservice v2 API path, e.g. '/tickets'.",
+            "title": "Path",
+            "type": "string"
+          },
+          "values": {
+            "additionalProperties": true,
+            "description": "Field name/value pairs for the request body.",
+            "title": "Values",
+            "type": "object"
+          }
+        },
+        "required": [
+          "path",
+          "values"
+        ],
+        "title": "GenericWriteParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "generic",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "default": "Generic response",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "title": "GenericPayload",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "freshservice-connector.update_record",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "freshservice"
+    },
+    {
+      "name": "delete_record",
+      "description": "Permanently delete a record from any Freshservice v2 API path. Cannot be undone.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "delete:record"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved Freshservice connection ID. Omit to use the first connected account.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "path": {
+            "description": "Exact Freshservice v2 API path including the record id, e.g. '/tickets/123'.",
+            "title": "Path",
+            "type": "string"
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "title": "GenericDeleteParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "delete",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "default": "Delete result",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "deleted": {
+            "default": true,
+            "title": "Deleted",
+            "type": "boolean"
+          }
+        },
+        "title": "DeleteResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "freshservice-connector.delete_record",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "freshservice"
+    },
+    {
+      "name": "audit_instance_health",
+      "description": "Build one aggregated health report across the connected Freshservice account: open tickets/problems/changes/releases.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved Freshservice connection ID. Omit to use the first connected account.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "AuditHealthParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "audit",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "default": "Freshservice health audit",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "open_ticket_count": {
+            "default": 0,
+            "title": "Open Ticket Count",
+            "type": "integer"
+          },
+          "open_problem_count": {
+            "default": 0,
+            "title": "Open Problem Count",
+            "type": "integer"
+          },
+          "open_change_count": {
+            "default": 0,
+            "title": "Open Change Count",
+            "type": "integer"
+          },
+          "open_release_count": {
+            "default": 0,
+            "title": "Open Release Count",
+            "type": "integer"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "title": "HealthAudit",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "freshservice-connector.audit_instance_health",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "freshservice"
+    },
+    {
+      "name": "list_assets",
+      "description": "List Configuration Items (CMDB assets) on the connected Freshservice account.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved Freshservice connection ID. Omit to use the first connected account.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "per_page": {
+            "default": 30,
+            "description": "Max records to return (up to 100).",
+            "title": "Per Page",
+            "type": "integer"
+          }
+        },
+        "title": "ListAssetsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "Asset": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "default": "",
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "display_id": {
+                "default": "",
+                "title": "Display Id",
+                "type": "string"
+              },
+              "name": {
+                "default": "",
+                "title": "Name",
+                "type": "string"
+              },
+              "asset_tag": {
+                "default": "",
+                "title": "Asset Tag",
+                "type": "string"
+              },
+              "raw": {
+                "additionalProperties": true,
+                "default": {},
+                "title": "Raw",
+                "type": "object"
+              }
+            },
+            "required": [
+              "id"
+            ],
+            "title": "Asset",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "default": "assets",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "default": "Assets",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "assets": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/Asset"
+            },
+            "title": "Assets",
+            "type": "array"
+          }
+        },
+        "title": "AssetList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "freshservice-connector.list_assets",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "freshservice"
+    },
+    {
+      "name": "get_asset",
+      "description": "Read one asset (Configuration Item) in full by display id.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved Freshservice connection ID. Omit to use the first connected account.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "display_id": {
+            "description": "Asset display id.",
+            "title": "Display Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "display_id"
+        ],
+        "title": "AssetIdParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "display_id": {
+            "default": "",
+            "title": "Display Id",
+            "type": "string"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
+          "asset_tag": {
+            "default": "",
+            "title": "Asset Tag",
+            "type": "string"
+          },
+          "raw": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Raw",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "Asset",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "freshservice-connector.get_asset",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "freshservice"
+    }
+  ],
+  "signals": [],
+  "schedules": [],
+  "required_scopes": [],
+  "icon_size_bytes": 698,
+  "lifecycle": {
+    "health_check": {
+      "interval_sec": 60
+    }
+  },
+  "secrets": [
+    {
+      "name": "freshservice_connections",
+      "description": "JSON list of connected Freshservice accounts and encrypted API keys. Managed only through connect_freshservice and disconnect_freshservice.",
+      "required": true,
+      "write_mode": "both",
+      "max_bytes": 65536,
+      "scope": "user",
+      "rotation_hint_days": 90
+    }
+  ],
+  "panels": [
+    {
+      "panel_id": "secrets",
+      "slot": "right",
+      "title": "Secrets",
+      "tree": {},
+      "icon": "KeyRound",
+      "refresh": "manual",
+      "center_overlay": false
+    },
+    {
+      "panel_id": "freshservice_sidebar",
+      "slot": "left",
+      "title": "Freshservice",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": false
+    },
+    {
+      "panel_id": "freshservice_connect_help",
+      "slot": "center",
+      "title": "Connecting Freshservice",
+      "tree": {},
+      "icon": "HelpCircle",
+      "refresh": "manual",
+      "center_overlay": true
+    },
+    {
+      "panel_id": "freshservice_center",
+      "slot": "center",
+      "title": "Freshservice",
+      "tree": {},
+      "icon": "Ticket",
+      "refresh": "manual",
+      "center_overlay": true
+    },
+    {
+      "panel_id": "freshservice_settings",
+      "slot": "center",
+      "title": "Freshservice settings",
+      "tree": {},
+      "icon": "Settings",
+      "refresh": "manual",
+      "center_overlay": true
+    }
+  ]
+}
