@@ -143,6 +143,7 @@ class DeleteResult(sdl.Entity):
 
 
 class Ticket(sdl.Entity):
+    id: str = ""
     ticket_id: str = ""
     title: str = ""
     subject: str = ""
@@ -159,6 +160,7 @@ class TicketList(sdl.Entity):
 
 
 class Problem(sdl.Entity):
+    id: str = ""
     problem_id: str = ""
     title: str = ""
     subject: str = ""
@@ -173,6 +175,7 @@ class ProblemList(sdl.Entity):
 
 
 class ChangeRequest(sdl.Entity):
+    id: str = ""
     change_id: str = ""
     title: str = ""
     subject: str = ""
@@ -187,6 +190,7 @@ class ChangeRequestList(sdl.Entity):
 
 
 class Release(sdl.Entity):
+    id: str = ""
     release_id: str = ""
     title: str = ""
     subject: str = ""
@@ -201,6 +205,7 @@ class ReleaseList(sdl.Entity):
 
 
 class Asset(sdl.Entity):
+    id: str = ""
     display_id: str = ""
     title: str = ""
     name: str = ""
@@ -215,6 +220,7 @@ class AssetList(sdl.Entity):
 
 
 class Article(sdl.Entity):
+    id: str = ""
     article_id: str = ""
     title: str = ""
     status: int = 0
@@ -228,6 +234,7 @@ class ArticleList(sdl.Entity):
 
 
 class Person(sdl.Entity):
+    id: str = ""
     person_id: str = ""
     title: str = ""
     name: str = ""
