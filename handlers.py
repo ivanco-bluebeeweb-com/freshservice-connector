@@ -102,7 +102,7 @@ async def disconnect_freshservice(ctx, params: DisconnectFreshserviceParams) -> 
 async def list_connections(ctx, params: NoParams) -> ActionResult:
     """Imperal action: list_connections."""
     connections = await _load_connections(ctx)
-    return ActionResult.success(data=ConnectionList(connections=[_connection_entity(c) for c in connections]))
+    return ActionResult.success(data=ConnectionList(connections=[_connection_entity(c) for c in connections]), summary="Connections listed.")
 
 
 def _to_ticket(item: dict) -> Ticket:
@@ -121,7 +121,7 @@ async def list_tickets(ctx, params: ListTicketsParams) -> ActionResult:
         items = await client.list_tickets(query=params.query, per_page=params.per_page)
     except fc.FreshserviceError as exc:
         return ActionResult.error(str(exc), code="FRESHSERVICE_LIST_TICKETS_FAILED", retryable=exc.retryable)
-    return ActionResult.success(data=TicketList(tickets=[_to_ticket(i) for i in items]))
+    return ActionResult.success(data=TicketList(tickets=[_to_ticket(i) for i in items]), summary="Tickets listed.")
 
 
 @chat.function("get_ticket", "Read one ticket in full by id.", action_type="read", chain_callable=True, data_model=Ticket, event="freshservice-connector.get_ticket")
@@ -132,7 +132,7 @@ async def get_ticket(ctx, params: TicketIdParams) -> ActionResult:
         item = await client.get_ticket(params.ticket_id)
     except fc.FreshserviceError as exc:
         return ActionResult.error(str(exc), code="FRESHSERVICE_GET_TICKET_FAILED", retryable=exc.retryable)
-    return ActionResult.success(data=_to_ticket(item))
+    return ActionResult.success(data=_to_ticket(item), summary="Ticket retrieved.")
 
 
 @chat.function("create_ticket", "Create a new ticket (Incident or Service Request).", action_type="write", chain_callable=True, data_model=Ticket, event="freshservice-connector.create_ticket", effects=["create:ticket"])
@@ -172,7 +172,7 @@ async def list_problems(ctx, params: ListProblemsParams) -> ActionResult:
         items = await client.list_problems(per_page=params.per_page)
     except fc.FreshserviceError as exc:
         return ActionResult.error(str(exc), code="FRESHSERVICE_LIST_PROBLEMS_FAILED", retryable=exc.retryable)
-    return ActionResult.success(data=ProblemList(problems=[_to_problem(i) for i in items]))
+    return ActionResult.success(data=ProblemList(problems=[_to_problem(i) for i in items]), summary="Problems listed.")
 
 
 @chat.function("create_problem", "Create a new problem record.", action_type="write", chain_callable=True, data_model=Problem, event="freshservice-connector.create_problem", effects=["create:problem"])
@@ -212,7 +212,7 @@ async def list_changes(ctx, params: ListChangesParams) -> ActionResult:
         items = await client.list_changes(per_page=params.per_page)
     except fc.FreshserviceError as exc:
         return ActionResult.error(str(exc), code="FRESHSERVICE_LIST_CHANGES_FAILED", retryable=exc.retryable)
-    return ActionResult.success(data=ChangeRequestList(changes=[_to_change(i) for i in items]))
+    return ActionResult.success(data=ChangeRequestList(changes=[_to_change(i) for i in items]), summary="Changes listed.")
 
 
 @chat.function("create_change", "Create a new change request.", action_type="write", chain_callable=True, data_model=ChangeRequest, event="freshservice-connector.create_change", effects=["create:change"])
@@ -252,7 +252,7 @@ async def list_releases(ctx, params: ListReleasesParams) -> ActionResult:
         items = await client.list_releases(per_page=params.per_page)
     except fc.FreshserviceError as exc:
         return ActionResult.error(str(exc), code="FRESHSERVICE_LIST_RELEASES_FAILED", retryable=exc.retryable)
-    return ActionResult.success(data=ReleaseList(releases=[_to_release(i) for i in items]))
+    return ActionResult.success(data=ReleaseList(releases=[_to_release(i) for i in items]), summary="Releases listed.")
 
 
 @chat.function("create_release", "Create a new release record.", action_type="write", chain_callable=True, data_model=Release, event="freshservice-connector.create_release", effects=["create:release"])
@@ -292,7 +292,7 @@ async def list_knowledge_articles(ctx, params: ListArticlesParams) -> ActionResu
         items = await client.list_solution_articles(per_page=params.per_page)
     except fc.FreshserviceError as exc:
         return ActionResult.error(str(exc), code="FRESHSERVICE_LIST_ARTICLES_FAILED", retryable=exc.retryable)
-    return ActionResult.success(data=ArticleList(articles=[_to_article(i) for i in items]))
+    return ActionResult.success(data=ArticleList(articles=[_to_article(i) for i in items]), summary="Knowledge articles listed.")
 
 
 def _to_person(item: dict, kind: str) -> Person:
@@ -311,7 +311,7 @@ async def list_requesters(ctx, params: ListPeopleParams) -> ActionResult:
         items = await client.list_requesters(per_page=params.per_page)
     except fc.FreshserviceError as exc:
         return ActionResult.error(str(exc), code="FRESHSERVICE_LIST_REQUESTERS_FAILED", retryable=exc.retryable)
-    return ActionResult.success(data=PersonList(people=[_to_person(i, "requester") for i in items]))
+    return ActionResult.success(data=PersonList(people=[_to_person(i, "requester") for i in items]), summary="Requesters listed.")
 
 
 @chat.function("list_agents", "List agents (support staff) on the connected Freshservice account.", action_type="read", chain_callable=True, data_model=PersonList, event="freshservice-connector.list_agents")
@@ -322,7 +322,7 @@ async def list_agents(ctx, params: ListPeopleParams) -> ActionResult:
         items = await client.list_agents(per_page=params.per_page)
     except fc.FreshserviceError as exc:
         return ActionResult.error(str(exc), code="FRESHSERVICE_LIST_AGENTS_FAILED", retryable=exc.retryable)
-    return ActionResult.success(data=PersonList(people=[_to_person(i, "agent") for i in items]))
+    return ActionResult.success(data=PersonList(people=[_to_person(i, "agent") for i in items]), summary="Agents listed.")
 
 
 @chat.function("list_table", "List records from any Freshservice v2 API path -- a generic passthrough for endpoints not covered by typed wrappers.", action_type="read", chain_callable=True, data_model=GenericPayload, event="freshservice-connector.list_table")
@@ -333,7 +333,7 @@ async def list_table(ctx, params: GenericGetParams) -> ActionResult:
         data = await client.generic_get(params.path, params.query_params)
     except fc.FreshserviceError as exc:
         return ActionResult.error(str(exc), code="FRESHSERVICE_GENERIC_GET_FAILED", retryable=exc.retryable)
-    return ActionResult.success(data=GenericPayload(payload=data))
+    return ActionResult.success(data=GenericPayload(payload=data), summary="Table listed.")
 
 
 @chat.function("create_record", "Create a new record on any Freshservice v2 API path -- a generic passthrough for endpoints not covered by typed wrappers.", action_type="write", chain_callable=True, data_model=GenericPayload, event="freshservice-connector.create_record", effects=["create:record"])
@@ -393,7 +393,7 @@ async def audit_instance_health(ctx, params: AuditHealthParams) -> ActionResult:
             f"{len(open_tickets)} open tickets, {len(open_problems)} open problems, "
             f"{len(open_changes)} pending changes, {len(open_releases)} open releases."
         ),
-    ))
+    ), summary="Instance health audit ready.")
 
 
 def _to_asset(item: dict) -> Asset:
@@ -411,7 +411,7 @@ async def list_assets(ctx, params: ListAssetsParams) -> ActionResult:
         items = await client.list_assets(per_page=params.per_page)
     except fc.FreshserviceError as exc:
         return ActionResult.error(str(exc), code="FRESHSERVICE_LIST_ASSETS_FAILED", retryable=exc.retryable)
-    return ActionResult.success(data=AssetList(assets=[_to_asset(i) for i in items]))
+    return ActionResult.success(data=AssetList(assets=[_to_asset(i) for i in items]), summary="Assets listed.")
 
 
 @chat.function("get_asset", "Read one asset (Configuration Item) in full by display id.", action_type="read", chain_callable=True, data_model=Asset, event="freshservice-connector.get_asset")
@@ -422,4 +422,4 @@ async def get_asset(ctx, params: AssetIdParams) -> ActionResult:
         item = await client.get_asset(params.display_id)
     except fc.FreshserviceError as exc:
         return ActionResult.error(str(exc), code="FRESHSERVICE_GET_ASSET_FAILED", retryable=exc.retryable)
-    return ActionResult.success(data=_to_asset(item))
+    return ActionResult.success(data=_to_asset(item), summary="Asset retrieved.")
