@@ -20,7 +20,7 @@ async def freshservice_sidebar(ctx, **kwargs) -> ui.UINode:
     if not connections:
         return ui.Stack(direction="v", gap=3, align="stretch", children=[
             ui.Text("Connect your Freshservice account", variant="subtitle"),
-            ui.Button("Sign in with Freshservice (SSO / OAuth)", variant="primary", size="sm", full_width=True, icon="login"),
+            ui.Button("Sign in with Freshservice (SSO / OAuth)", variant="primary", size="sm", icon="login"),
             ui.Divider(),
             ui.Text("Or connect via API Key & Domain", variant="caption"),
             ui.Form(action="connect_freshservice", submit_label="Connect", children=[
